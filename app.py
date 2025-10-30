@@ -18,7 +18,7 @@ app.secret_key = app.config['SECRET_KEY']
 # ==============================================================
 # 🔹 Import & Register Blueprints
 # ==============================================================
-from routes.auth import auth_bp
+from routes.auth_routes import auth_bp
 from routes.dashboard_routes import dashboard_bp
 from routes.subjects_routes import subjects_bp
 from routes.student_routes import student_bp
