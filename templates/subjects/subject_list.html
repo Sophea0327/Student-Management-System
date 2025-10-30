@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary">📚 Subject Management</h2>
+    <a href="{{ url_for('subjects.assign_page') }}" class="btn btn-outline-primary">
+      <i class="bi bi-person-check"></i> Assign Subjects to Teachers
+    </a>
+  </div>
+
+  <!-- Add Subject Form -->
+  <div class="card shadow-sm mb-4 border-0 rounded-3">
+    <div class="card-header bg-success text-white fw-semibold">
+      ➕ Add New Subject
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('subjects.add_subject') }}">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Subject Name</label>
+            <input type="text" name="name" class="form-control" placeholder="Enter subject name" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Assign to Class</label>
+            <select name="class_id" class="form-select" required>
+              <option value="">-- Choose Class --</option>
+              {% for c in classes %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2 d-flex">
+            <button type="submit" class="btn btn-success w-100 fw-bold">Add Subject</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Subjects List -->
+  <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-header bg-primary text-white fw-semibold">
+      📝 Subjects List
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover table-bordered mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Subject Name</th>
+            <th>Class</th>
+            <th>Assigned Teacher(s)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if subjects %}
+            {% for s in subjects %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ s.subject_name }}</td>
+                <td>{{ s.class_name or 'Unassigned' }}</td>
+                <td>
+                  {% if s.teacher_name %}
+                    {% for name in s.teacher_name.split(', ') %}
+                      <span class="badge bg-success me-1">{{ name }}</span>
+                    {% endfor %}
+                  {% else %}
+                    <span class="badge bg-secondary">Not Assigned</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4" class="text-center text-muted py-3">No subjects found.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

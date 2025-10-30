@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}Update User{% endblock %}
+{% block content %}
+<h3>Update User</h3>
+<a href="{{ url_for('auth.manage_users') }}" class="btn btn-secondary mb-3">← Back</a>
+
+<form method="POST">
+  <div class="mb-3">
+    <label>Username</label>
+    <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+  </div>
+  <div class="mb-3">
+    <label>Email</label>
+    <input type="email" name="email" class="form-control" value="{{ user.email }}">
+  </div>
+  <div class="mb-3">
+    <label>Role</label>
+    <select name="role" class="form-control">
+      <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+      <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>New Password (optional)</label>
+    <input type="password" name="password" class="form-control">
+  </div>
+  <button type="submit" class="btn btn-primary">Update</button>
+</form>
+{% endblock %}

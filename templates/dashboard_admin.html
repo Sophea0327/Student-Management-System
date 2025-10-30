@@ -1,0 +1,146 @@
+{% extends "layout.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+  <!-- 🔝 Top Bar: Search + Profile -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    
+    <!-- 🔍 Search Form -->
+    <form class="d-flex align-items-center w-50 position-relative"
+          role="search"
+          method="GET"
+          action="{{ url_for('student.list_students') }}">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0">
+          <button type="submit" class="btn p-0 border-0 bg-transparent">
+            <i class="bi bi-search text-primary fs-5"></i>
+          </button>
+        </span>
+        <input 
+          type="search" 
+          class="form-control border-start-0"
+          placeholder="Search students, teachers, classes..."
+          aria-label="Search"
+          name="q"
+          value="{{ request.args.get('q', '') }}">
+      </div>
+    </form>
+
+    <!-- 👤 Profile Dropdown -->
+    <div class="dropdown">
+      <button class="btn btn-light d-flex align-items-center gap-2"
+              type="button"
+              id="profileDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="border-radius: 50px;">
+        <img src="{{ session.get('profile_image') or url_for('static', filename='images/default-avatar.jpg') }}"
+             alt="Profile"
+             class="rounded-circle"
+             width="35"
+             height="35"
+             style="object-fit: cover;">
+        <span class="fw-semibold">{{ session.get('username') | capitalize }}</span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+        <li><a class="dropdown-item" href="{{ url_for('auth.view_profile') }}"><i class="bi bi-person"></i> Profile</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('auth.manage_users') }}"><i class="bi bi-key"></i> Change Password</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 📦 Stats Cards -->
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-3 text-center">
+        <div class="card-body">
+          <i class="bi bi-people-fill text-primary" style="font-size: 2.5rem;"></i>
+          <h5 class="mt-3 fw-semibold text-secondary">Total Students</h5>
+          <h2 class="fw-bold text-dark">{{ total_students }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-3 text-center">
+        <div class="card-body">
+          <i class="bi bi-person-badge-fill text-success" style="font-size: 2.5rem;"></i>
+          <h5 class="mt-3 fw-semibold text-secondary">Total Teachers</h5>
+          <h2 class="fw-bold text-dark">{{ total_teachers }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-3 text-center">
+        <div class="card-body">
+          <i class="bi bi-building text-warning" style="font-size: 2.5rem;"></i>
+          <h5 class="mt-3 fw-semibold text-secondary">Total Classes</h5>
+          <h2 class="fw-bold text-dark">{{ total_classes }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📊 Charts Section -->
+  <div class="row mt-5 g-4">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-info text-white fw-semibold">
+          📈 Average Grades by Class
+        </div>
+        <div class="card-body" style="height: 400px;">
+          <canvas id="gradeChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-warning text-white fw-semibold">
+          🧍 Student Distribution
+        </div>
+        <div class="card-body" style="height: 400px;">
+          <canvas id="studentPieChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🚀 Quick Links -->
+  <div class="card mt-5 shadow-sm border-0 rounded-3">
+    <div class="card-header bg-primary text-white fw-semibold">
+      Quick Navigation
+    </div>
+    <div class="card-body">
+      <div class="d-flex flex-wrap gap-3">
+        <a href="{{ url_for('subjects.subject_list') }}" class="btn btn-outline-primary">
+          <i class="bi bi-book"></i> Manage Subjects
+        </a>
+        <a href="{{ url_for('subjects.class_list') }}" class="btn btn-outline-success">
+          <i class="bi bi-building"></i> Manage Classes
+        </a>
+        <a href="{{ url_for('student.list_students') }}" class="btn btn-outline-info">
+          <i class="bi bi-person-lines-fill"></i> View Students
+        </a>
+        <a href="{{ url_for('auth.manage_users') }}" class="btn btn-outline-warning">
+          <i class="bi bi-people"></i> Manage Users
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 🔹 JSON Data for Chart.js -->
+<script id="chartDataClass" type="application/json">{{ class_names | tojson }}</script>
+<script id="chartDataAvg" type="application/json">{{ avg_grades | tojson }}</script>
+<script id="chartDataLabels" type="application/json">{{ student_labels | tojson }}</script>
+<script id="chartDataCounts" type="application/json">{{ student_counts | tojson }}</script>
+
+<!-- 📊 Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% block title %}Teacher Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="text-primary fw-bold">👩‍🏫 Teacher Management</h2>
+  <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTeacherModal">
+    + Add Teacher
+  </button>
+</div>
+
+<!-- Teacher Table -->
+<table class="table table-hover shadow-sm">
+  <thead class="table-primary">
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Department</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in teachers %}
+    <tr>
+      <td>{{ t.id }}</td>
+      <td>{{ t.username }}</td>
+      <td>{{ t.email }}</td>
+      <td>{{ t.department or '-' }}</td>
+      <td>
+        {% if t.status == 'active' %}
+          <span class="badge bg-success">Active</span>
+        {% else %}
+          <span class="badge bg-secondary">Inactive</span>
+        {% endif %}
+      </td>
+      <td>
+        <a href="{{ url_for('teacher_routes.delete_teacher', teacher_id=t.id) }}" 
+           class="btn btn-sm btn-danger" 
+           onclick="return confirm('Delete this teacher?')">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Add Teacher Modal -->
+<div class="modal fade" id="addTeacherModal" tabindex="-1" aria-labelledby="addTeacherModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{{ url_for('teacher_routes.add_teacher') }}" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Teacher</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Department</label>
+            <input type="text" name="department" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

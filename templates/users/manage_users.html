@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}Manage Users{% endblock %}
+{% block content %}
+<h3>User Management</h3>
+<a href="{{ url_for('auth.create_user') }}" class="btn btn-success mb-3">+ Create User</a>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr>
+      <td>{{ user.id }}</td>
+      <td>{{ user.username }}</td>
+      <td>{{ user.email or '-' }}</td>
+      <td>{{ user.role }}</td>
+      <td>
+        <a href="{{ url_for('auth.update_user', user_id=user.id) }}" class="btn btn-sm btn-primary">Edit</a>
+        <form action="{{ url_for('auth.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
