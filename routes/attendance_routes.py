@@ -23,10 +23,11 @@ def mark_attendance():
     student_ids = request.form.getlist('student_id')
 
     for student_id, status in zip(student_ids, statuses):
-        AttendanceModel.mark_attendance(student_id, date.today(), status)
+        AttendanceModel.mark_attendance(student_id, class_id, date.today(), status)
 
     flash("Attendance marked successfully!", "success")
     return redirect(url_for('attendance_routes.attendance'))
+
 
 @attendance_routes.route('/attendance/students/<int:class_id>')
 def get_students_by_class(class_id):
