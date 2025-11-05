@@ -62,7 +62,7 @@ def create_tables():
                 username VARCHAR(100) NOT NULL,
                 email VARCHAR(150) NOT NULL UNIQUE,
                 password_hash VARCHAR(255) NOT NULL,
-                role ENUM('admin', 'teacher') NOT NULL,
+                role ENUM('admin', 'teacher','student') NOT NULL,
                 image VARCHAR(255),
                 status ENUM('active', 'inactive') DEFAULT 'active',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -207,6 +207,7 @@ def create_tables():
                     ON UPDATE CASCADE
                     ON DELETE SET NULL
             );
+      
             """)
 
             # ==================================================

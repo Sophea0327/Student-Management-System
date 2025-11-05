@@ -4,24 +4,21 @@
 # =====================================================================
 
 from .db import get_db
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from mysql.connector import Error
 
 
 class UserModel:
+
     # ------------------------
     # 🔍 READ OPERATIONS
     # ------------------------
     @staticmethod
-    def get_all_users(exclude_admin=False):
-        """
-        Get all users.
-        If exclude_admin=True, skip admin users.
-        """
+    def get_all_users(role=None):
         db = get_db()
         cursor = db.cursor(dictionary=True)
         try:
-            if exclude_admin:
+            if role:
                 cursor.execute("SELECT * FROM users WHERE role != 'admin'")
             else:
                 cursor.execute("SELECT * FROM users")
@@ -29,9 +26,11 @@ class UserModel:
         finally:
             cursor.close()
 
+   
+
+
     @staticmethod
     def get_user_by_id(user_id):
-        """Fetch a user by ID."""
         db = get_db()
         cursor = db.cursor(dictionary=True)
         try:
@@ -41,8 +40,16 @@ class UserModel:
             cursor.close()
 
     @staticmethod
+    def get_user_by_email(email):
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        try:
+            cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+            return cursor.fetchone()
+        finally:
+            cursor.close()
+    @staticmethod
     def get_user_by_username(username):
-        """Fetch a user by username."""
         db = get_db()
         cursor = db.cursor(dictionary=True)
         try:
@@ -51,12 +58,11 @@ class UserModel:
         finally:
             cursor.close()
 
-    # ✅ Alias for backward compatibility
-    find_by_username = get_user_by_username
+    find_by_username = get_user_by_email  # alias
+    find_by_username = get_user_by_username  # alias
 
     @staticmethod
     def get_user_by_email(email):
-        """Fetch a user by email."""
         db = get_db()
         cursor = db.cursor(dictionary=True)
         try:
@@ -66,39 +72,33 @@ class UserModel:
             cursor.close()
 
     # ------------------------
-    # 🧩 CREATE
+    # 🧩 CREATE (expects password already hashed)
     # ------------------------
     @staticmethod
-    def create_user(username, email, password, role="teacher", status="active", image=None):
-        """
-        Create a new user.
-        image: Optional path or URL of the user's image.
-        """
+    def create_user(username, email, password_hash, role, status="active", image=None):
         db = get_db()
         cursor = db.cursor()
         try:
-            hashed_password = generate_password_hash(password)
+            print("Attempting insert:", username, email, role)
             cursor.execute("""
                 INSERT INTO users (username, email, password_hash, role, status, image)
                 VALUES (%s, %s, %s, %s, %s, %s)
-            """, (username, email, hashed_password, role, status, image))
+            """, (username, email, password_hash, role, status, image))
             db.commit()
-            print(f"✅ User '{username}' created successfully.")
+            print(f"✅ User '{username}' with role '{role}' created successfully.")
         except Error as e:
             print(f"❌ Error creating user: {e}")
             db.rollback()
         finally:
             cursor.close()
 
+
+
     # ------------------------
-    # ✏️ UPDATE
+    # ✏️ UPDATE (expects password already hashed)
     # ------------------------
     @staticmethod
     def update_user(user_id, username=None, email=None, password=None, role=None, status=None, image=None):
-        """
-        Update user details.
-        Only updates fields provided (non-None values).
-        """
         db = get_db()
         cursor = db.cursor()
         try:
@@ -111,9 +111,9 @@ class UserModel:
             if email:
                 updates.append("email = %s")
                 params.append(email)
-            if password:
+            if password:  # password must be pre-hashed before calling this
                 updates.append("password_hash = %s")
-                params.append(generate_password_hash(password))
+                params.append(password)
             if role:
                 updates.append("role = %s")
                 params.append(role)
@@ -144,7 +144,6 @@ class UserModel:
     # ------------------------
     @staticmethod
     def delete_user(user_id):
-        """Delete a user by ID."""
         db = get_db()
         cursor = db.cursor()
         try:
@@ -158,16 +157,14 @@ class UserModel:
             cursor.close()
 
     # ------------------------
-    # 🔐 AUTHENTICATION HELPERS
+    # 🔐 AUTH HELPERS
     # ------------------------
     @staticmethod
     def verify_password(stored_hash, password):
-        """Verify a user password."""
         return check_password_hash(stored_hash, password)
 
     @staticmethod
     def change_password(user_id, new_password):
-        """Update only the password of a user."""
         db = get_db()
         cursor = db.cursor()
         try:
@@ -186,7 +183,6 @@ class UserModel:
     # ------------------------
     @staticmethod
     def set_user_status(user_id, status):
-        """Activate or deactivate a user."""
         db = get_db()
         cursor = db.cursor()
         try:
@@ -204,7 +200,6 @@ class UserModel:
     # ------------------------
     @staticmethod
     def count_users():
-        """Return total number of users."""
         db = get_db()
         cursor = db.cursor()
         try:
@@ -216,16 +211,14 @@ class UserModel:
 
     @staticmethod
     def search_users(keyword):
-        """Search users by username or email."""
         db = get_db()
         cursor = db.cursor(dictionary=True)
         try:
-            query = """
+            like = f"%{keyword}%"
+            cursor.execute("""
                 SELECT * FROM users
                 WHERE username LIKE %s OR email LIKE %s
-            """
-            like = f"%{keyword}%"
-            cursor.execute(query, (like, like))
+            """, (like, like))
             return cursor.fetchall()
         finally:
             cursor.close()

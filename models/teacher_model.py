@@ -58,7 +58,7 @@ class TeacherModel:
             cursor.execute("""
                 INSERT INTO users (username, email, password_hash, role, image)
                 VALUES (%s, %s, %s, 'teacher', %s)
-            """, (username, email, password_hash, image))
+            """, (username, email, password_hash, department, image))
             user_id = cursor.lastrowid
 
             # Insert into teachers table
