@@ -20,7 +20,8 @@ def add_teacher():
     username = request.form.get('username')
     email = request.form.get('email')
     password = request.form.get('password')
-    department = request.form.get('specialization')
+    department = request.form.get('department')
+
 
     if not all([username, email, password, department]):
         flash("All fields are required", "danger")

@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block title %}Manage Classes{% endblock %}
+
+{% block content %}
+<style>
+.genz-card { border-radius: 18px; background: #fff; border: 1px solid #e8e8e8; transition: 0.3s; }
+.genz-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
+.genz-btn { border-radius: 12px; font-weight: 600; background: linear-gradient(135deg, #6a5af9, #b14efd); border: none; transition: 0.4s; color:white; }
+.genz-btn:hover { transform: translateY(-2px); background: linear-gradient(135deg, #553ff7, #9f3eff); }
+.floating-bg { position: absolute; top:-80px; left:-60px; width:170px; height:170px; background: rgba(129,107,255,0.25); border-radius:50%; filter: blur(45px); }
+</style>
+
+<div class="position-relative">
+  <div class="floating-bg"></div>
+  <div class="container py-4">
+    <h3 class="text-center mb-4" style="color:#6a5af9; font-weight:700;">📚 Manage Classes</h3>
+    <div class="text-end mb-3">
+      <a href="{{ url_for('classes.create_class') }}" class="btn genz-btn">+ Add New Class</a>
+    </div>
+
+    <div class="row">
+      {% for class_ in classes %}
+      <div class="col-md-4 col-12 mb-3">
+        <div class="card genz-card p-3">
+          <h5 class="fw-bold">{{ class_.name }} ({{ class_.year }})</h5>
+          <p>Teacher: {{ class_.teacher_name or 'Unassigned' }}</p>
+          <div class="d-flex justify-content-between">
+            <a href="{{ url_for('classes.update_class', class_id=class_.id) }}" class="btn btn-sm genz-btn">Edit</a>
+            <form action="{{ url_for('classes.delete_class', class_id=class_.id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+              <button class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <p class="text-center">No classes available. Add a new class!</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

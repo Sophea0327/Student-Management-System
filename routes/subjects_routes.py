@@ -9,55 +9,6 @@ from models.db import get_db
 subjects_bp = Blueprint('subjects', __name__, url_prefix='/subjects')
 
 
-# ============================================================
-# CLASS MANAGEMENT
-# ============================================================
-@subjects_bp.route('/classes')
-def class_list():
-    """Display all classes and related teacher info."""
-    try:
-        classes = ClassModel.get_all()
-        db = get_db()
-        cursor = db.cursor(dictionary=True)
-
-        cursor.execute("SELECT id, username FROM users WHERE role='teacher'")
-        teachers = cursor.fetchall()
-
-        return render_template('subjects/class_list.html', classes=classes, teachers=teachers)
-
-    except Exception as e:
-        flash(f'Error loading classes: {e}', 'danger')
-        return render_template('errors/404.html', message=f"Error loading classes: {e}")
-
-    finally:
-        if cursor:
-            cursor.close()
-        if db:
-            db.close()
-
-
-@subjects_bp.route('/classes/add', methods=['POST'])
-def add_class():
-    """Add a new class."""
-    name = request.form.get('name')
-    year = request.form.get('year')
-    teacher_id = request.form.get('id') or None
-
-    if not name or not year:
-        flash('⚠️ Please fill all required fields!', 'danger')
-        return redirect(url_for('subjects.class_list'))
-
-    ClassModel.add(name, year, teacher_id)
-    flash('✅ Class added successfully!', 'success')
-    return redirect(url_for('subjects.class_list'))
-
-
-@subjects_bp.route('/classes/delete/<int:id>')
-def delete_class(id):
-    """Delete a class."""
-    ClassModel.delete(id)
-    flash('🗑️ Class deleted successfully!', 'success')
-    return redirect(url_for('subjects.class_list'))
 
 
 # ============================================================

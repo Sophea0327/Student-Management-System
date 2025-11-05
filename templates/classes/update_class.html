@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %}Update Class{% endblock %}
+
+{% block content %}
+<div class="position-relative">
+  <div class="floating-bg"></div>
+  <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-6 col-11">
+      <div class="card genz-card shadow-sm p-4">
+        <h3 class="text-center mb-4" style="color:#6a5af9; font-weight:700;">✏️ Update Class</h3>
+
+        <form method="POST" action="{{ url_for('classes.update_class', class_id=class_.id) }}">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Class Name</label>
+            <input type="text" name="name" class="form-control genz-input" value="{{ class_.name }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Year</label>
+            <input type="number" name="year" class="form-control genz-input" value="{{ class_.year }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Assign Teacher</label>
+            <select name="teacher_id" class="form-control genz-input">
+              <option value="">-- Select Teacher --</option>
+              {% for teacher in teachers %}
+              <option value="{{ teacher.id }}" {% if teacher.id == class_.teacher_id %}selected{% endif %}>{{ teacher.username }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn genz-btn w-100 py-2 mt-2">Update Class</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -46,7 +46,7 @@ def edit_student(id):
     if request.method == 'POST':
         name = request.form['name']
         gender = request.form['gender']
-        date_of_birth = request.form['date_of_birth']
+        date_of_birth = request.form.get('date_of_birth')
         address = request.form['address']
         class_id = request.form['class_id']
 

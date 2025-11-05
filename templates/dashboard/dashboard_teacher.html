@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h3 class="fw-bold mb-4">👩‍🏫 Teacher Dashboard</h3>
+
+  <!-- 📊 Chart Section -->
+  <div class="card shadow-sm border-0 rounded-3 mb-5">
+    <div class="card-header bg-primary text-white fw-semibold">
+      📈 Average Scores by Class
+    </div>
+    <div class="card-body" style="height: 400px;">
+      <canvas id="teacherChart"></canvas>
+    </div>
+  </div>
+
+  <!-- 📦 Quick Stats -->
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card text-center shadow-sm border-0">
+        <div class="card-body">
+          <i class="bi bi-book text-success" style="font-size: 2.5rem;"></i>
+          <h5 class="fw-semibold text-secondary mt-2">Total Subjects</h5>
+          <h2 class="fw-bold text-dark">{{ total_subjects }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center shadow-sm border-0">
+        <div class="card-body">
+          <i class="bi bi-people text-info" style="font-size: 2.5rem;"></i>
+          <h5 class="fw-semibold text-secondary mt-2">Total Students</h5>
+          <h2 class="fw-bold text-dark">{{ total_students }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center shadow-sm border-0">
+        <div class="card-body">
+          <i class="bi bi-bar-chart text-warning" style="font-size: 2.5rem;"></i>
+          <h5 class="fw-semibold text-secondary mt-2">Average Score</h5>
+          <h2 class="fw-bold text-dark">{{ overall_avg }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🧠 JSON Data for Chart -->
+<script id="classData" type="application/json">{{ class_names | tojson }}</script>
+<script id="scoreData" type="application/json">{{ avg_scores | tojson }}</script>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/teacher_dashboard.js') }}"></script>
+{% endblock %}

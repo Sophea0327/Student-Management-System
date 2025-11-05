@@ -1,22 +1,80 @@
 {% extends "layout.html" %}
 {% block title %}Login{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-5">
-    <div class="card shadow p-4">
-      <h4 class="text-center mb-3">Login</h4>
-      <form method="POST" action="{{ url_for('auth.login') }}">
-        <div class="mb-3">
-          <label>Username</label>
-          <input type="text" name="username" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label>Password</label>
-          <input type="password" name="password" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-      </form>
+
+<style>
+  .genz-card {
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
+    transition: 0.3s ease;
+  }
+  .genz-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  }
+
+  .genz-input {
+    border-radius: 12px;
+  }
+
+  .genz-btn {
+    border-radius: 12px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #6a5af9, #b14efd);
+    border: none;
+    transition: 0.4s;
+  }
+  .genz-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #553ff7, #9f3eff);
+  }
+
+  .genz-title {
+    font-weight: 700;
+    color: #6a5af9;
+  }
+
+  .floating-bg {
+    position: absolute;
+    top: -80px;
+    left: -60px;
+    width: 170px;
+    height: 170px;
+    background: rgba(129, 107, 255, 0.25);
+    border-radius: 50%;
+    filter: blur(45px);
+  }
+</style>
+
+<div class="position-relative">
+  <div class="floating-bg"></div>
+
+  <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-5 col-11">
+      <div class="card genz-card shadow-sm p-4">
+        <h3 class="text-center genz-title mb-4">👋 Welcome Back</h3>
+
+        <form method="POST" action="{{ url_for('auth.login') }}">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email</label>
+            <input type="text" name="email" class="form-control genz-input" placeholder="Enter your email" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Password</label>
+            <input type="password" name="password" class="form-control genz-input" placeholder="Enter your password" required>
+          </div>
+
+          <button type="submit" class="btn genz-btn w-100 py-2 mt-2">Login</button>
+        </form>
+
+        <p class="text-center mt-3" style="font-size: 0.9rem; color: #6b6b6b;">
+          💡 Tip: Keep your password safe.
+        </p>
+      </div>
     </div>
   </div>
 </div>
+
 {% endblock %}
