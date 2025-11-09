@@ -138,7 +138,7 @@
 
   <!-- ✅ Sidebar -->
   <div class="sidebar">
-    <div class="brand">🎓 Student System</div>
+    <div class="brand">🎓 Student Management System</div>
 
     <nav class="nav flex-column">
       {% if session.get('role') == 'admin' %}
@@ -154,7 +154,8 @@
         <a class="nav-link" href="{{ url_for('dashboard.dashboard_home') }}">Dashboard</a>
         <a class="nav-link" href="{{ url_for('teacher_routes.teachers') }}">My Classes</a>
         <a class="nav-link" href="{{ url_for('teacher_routes.teachers') }}">My Subjects</a>
-        <a class="nav-link" href="{{ url_for('attendance_routes.attendance') }}">Attendance</a>
+        <a class="nav-link {% if request.endpoint == 'student.list_students' %}active{% endif %}" href="{{ url_for('student.list_students') }}">Students</a>
+        <a class="nav-link {% if request.endpoint == 'attendance_routes.attendance' %}active{% endif %}" href="{{ url_for('attendance_routes.attendance') }}">Attendance</a>
         <a class="nav-link" href="{{ url_for('grade.list_grades') }}">Grades</a>
 
       {% elif session.get('role') == 'student' %}

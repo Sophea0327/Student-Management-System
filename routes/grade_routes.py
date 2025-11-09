@@ -14,36 +14,60 @@ def list_grades():
 @grade_bp.route('/add', methods=['GET', 'POST'])
 def add_grade():
     if request.method == 'POST':
-        student_id = request.form['student_id']
-        subject_id = request.form['subject_id']
-        class_id = request.form['class_id']
-        score = float(request.form['score'])
+        student_id = request.form.get('student_id')
+        subject_id = request.form.get('subject_id')
+        class_id = request.form.get('class_id')
+        score = request.form.get('score')
+
+        print("\n📘 DEBUG INFO:")
+        print("Student ID:", student_id)
+        print("Subject ID:", subject_id)
+        print("Class ID:", class_id)
+        print("Score:", score)
+
+        if not all([student_id, subject_id, class_id, score]):
+            flash('All fields are required!', 'danger')
+            return redirect(url_for('grade.add_grade'))
+
+        # Convert to correct types
+        score = float(score)
 
         # Grade logic
         if score >= 90:
-            grade = 'A'
-            remarks = 'Excellent'
+            grade = 'A'; remarks = 'Excellent'
         elif score >= 80:
-            grade = 'B'
-            remarks = 'Good'
+            grade = 'B'; remarks = 'Good'
         elif score >= 70:
-            grade = 'C'
-            remarks = 'Average'
+            grade = 'C'; remarks = 'Average'
         elif score >= 60:
-            grade = 'D'
-            remarks = 'Needs Improvement'
+            grade = 'D'; remarks = 'Needs Improvement'
         else:
-            grade = 'F'
-            remarks = 'Fail'
+            grade = 'F'; remarks = 'Fail'
 
-        GradeModel.add_grade(student_id, subject_id, class_id, score, grade, remarks)
-        flash('Grade added successfully!', 'success')
-        return redirect(url_for('grade.list_grades'))
+        # Add to database
+        try:
+            from models.grade_model import GradeModel
+            GradeModel.add_grade(student_id, subject_id, class_id, score, grade, remarks)
+            flash('✅ Grade added successfully!', 'success')
+            return redirect(url_for('grade.list_grades'))
+        except Exception as e:
+            flash(f'❌ Error adding grade: {e}', 'danger')
+            print(f"Error adding grade: {e}")
+            return redirect(url_for('grade.add_grade'))
+
+    # GET method → Load dropdown data
+    from models.student_model import StudentModel
+    from models.subject_model import SubjectModel
+    from models.class_model import ClassModel
 
     students = StudentModel.get_all()
     subjects = SubjectModel.get_all()
-    classes = ClassModel.get_all()
-    return render_template('grade/grade_add.html', students=students, subjects=subjects, classes=classes)
+    classes = ClassModel.get_all_classes()  # ✅ Use this version, not get_all()
+
+    return render_template('grade/grade_add.html',
+                           students=students,
+                           subjects=subjects,
+                           classes=classes)
 
 @grade_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_grade(id):
